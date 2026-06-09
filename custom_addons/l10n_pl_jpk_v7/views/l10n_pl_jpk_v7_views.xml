@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_l10n_pl_jpk_v7_list" model="ir.ui.view">
+        <field name="name">l10n_pl.jpk.v7.list</field>
+        <field name="model">l10n_pl.jpk.v7</field>
+        <field name="arch" type="xml">
+            <list string="JPK_V7 Reports"
+                  decoration-success="state == 'submitted'"
+                  decoration-info="state == 'generated'"
+                  decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="period_type"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="cel_zlozenia"/>
+                <field name="invoice_count"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pl_jpk_v7_form" model="ir.ui.view">
+        <field name="name">l10n_pl.jpk.v7.form</field>
+        <field name="model">l10n_pl.jpk.v7</field>
+        <field name="arch" type="xml">
+            <form string="JPK_V7 Report">
+                <header>
+                    <button name="action_generate"
+                            string="Generate XML"
+                            type="object"
+                            class="oe_highlight"
+                            invisible="state == 'submitted'"/>
+                    <button name="action_verify_k_field_mapping"
+                            string="Verify K-Field Mapping"
+                            type="object"
+                            help="Run once after install to confirm _TAG_TO_K_FIELD matches your DB account tags"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,generated,submitted"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Period">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="period_type"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="cel_zlozenia"/>
+                            <field name="kod_urzedu"
+                                   placeholder="e.g. 1471 (auto-fills from company tax office)"/>
+                        </group>
+                        <group string="Result">
+                            <field name="invoice_count"/>
+                            <field name="xml_filename" invisible="not xml_file"/>
+                            <field name="xml_file" widget="binary"
+                                   filename="xml_filename"
+                                   invisible="not xml_file"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_pl_jpk_v7" model="ir.actions.act_window">
+        <field name="name">JPK_V7 Reports</field>
+        <field name="res_model">l10n_pl.jpk.v7</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Generate your first JPK_V7M report</p>
+            <p>
+                JPK_V7M (monthly) is due by the 25th of the following month.<br/>
+                JPK_V7K (quarterly) is due by the 25th after the quarter end.<br/>
+                Submit to: https://www.podatki.gov.pl/e-deklaracje/
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_l10n_pl_jpk_v7"
+              name="JPK_V7 Reports"
+              parent="account.menu_finance_reports"
+              action="action_l10n_pl_jpk_v7"
+              sequence="99"/>
+
+</odoo>

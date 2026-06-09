@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="cron_nbp_rate_update" model="ir.cron">
+        <field name="name">Poland: Update NBP Exchange Rates (Table A)</field>
+        <field name="model_id" ref="base.model_res_currency"/>
+        <field name="state">code</field>
+        <field name="code">model._l10n_pl_nbp_update_rates()</field>
+        <!-- Run at 09:00 daily — NBP publishes Table A on business days by ~08:15 -->
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="priority">10</field>
+    </record>
+
+</odoo>

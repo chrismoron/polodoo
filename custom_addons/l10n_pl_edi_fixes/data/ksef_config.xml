@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Fix GitHub issue #247360: l10n_pl_edi production KSeF API URL
+        Old (decommissioned): https://ksef.mf.gov.pl/api/v2
+        Correct:              https://api.ksef.mf.gov.pl/v2
+
+        This record is set as a fallback. The post_init_hook in hooks.py
+        also handles updating existing records at install time.
+
+        To verify after install:
+          Settings → Technical → Parameters → System Parameters
+          Search for "ksef" — confirm the URL is https://api.ksef.mf.gov.pl/v2
+    -->
+    <record id="param_ksef_prod_url" model="ir.config_parameter">
+        <field name="key">l10n_pl_edi_ksef.prod_url</field>
+        <field name="value">https://api.ksef.mf.gov.pl/v2</field>
+    </record>
+</odoo>

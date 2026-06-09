@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Inherit from the base account.view_move_form rather than l10n_pl's view.
+        This is defensive: l10n_pl's view name and structure can change between
+        Odoo versions, but account.view_move_form is stable.
+
+        We add a "Polska — KSeF" page to the notebook.
+    -->
+    <record id="view_move_form_l10n_pl_edi_fixes" model="ir.ui.view">
+        <field name="name">account.move.form.l10n_pl_edi_fixes</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Polska — KSeF / JPK"
+                      name="l10n_pl_compliance"
+                      invisible="move_type not in ('out_invoice','out_refund','in_invoice','in_refund')">
+                    <group>
+                        <group string="Płatność i zwolnienia (KSeF FA(3))">
+                            <field name="l10n_pl_split_payment" widget="boolean_toggle"/>
+                            <field name="l10n_pl_vat_exemption"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

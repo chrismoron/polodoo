@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_l10n_pl_jpk_kr_pd_list" model="ir.ui.view">
+        <field name="name">l10n_pl.jpk.kr.pd.list</field>
+        <field name="model">l10n_pl.jpk.kr.pd</field>
+        <field name="arch" type="xml">
+            <list string="JPK_KR_PD (JPK_CIT) Reports">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="zois_variant"/>
+                <field name="move_count"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_l10n_pl_jpk_kr_pd_form" model="ir.ui.view">
+        <field name="name">l10n_pl.jpk.kr.pd.form</field>
+        <field name="model">l10n_pl.jpk.kr.pd</field>
+        <field name="arch" type="xml">
+            <form string="JPK_KR_PD Report">
+                <header>
+                    <button name="action_generate"
+                            string="Generate XML"
+                            type="object"
+                            class="oe_highlight"
+                            invisible="state == 'submitted'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,generated,submitted"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Period &amp; Fiscal Year">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="fiscal_year_from"/>
+                            <field name="fiscal_year_to"/>
+                            <field name="cel_zlozenia"/>
+                            <field name="kod_urzedu"/>
+                            <field name="zois_variant"/>
+                        </group>
+                        <group string="Result">
+                            <field name="move_count"/>
+                            <field name="move_line_count"/>
+                            <field name="account_count"/>
+                            <field name="xml_filename" invisible="not xml_file"/>
+                            <field name="xml_file" filename="xml_filename"
+                                   invisible="not xml_file"/>
+                        </group>
+                    </group>
+
+                    <group string="RPD — Manual Income-Tax Adjustments"
+                           help="These four fields cannot be derived from accounting books.
+                                 Get the values from your tax reconciliation worksheet.">
+                        <group>
+                            <field name="rpd_k_3"/>
+                            <field name="rpd_k_6"/>
+                        </group>
+                        <group>
+                            <field name="rpd_k_7"/>
+                            <field name="rpd_k_8"/>
+                        </group>
+                    </group>
+
+                    <group string="Notes">
+                        <field name="notes" nolabel="1" colspan="2"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_account_account_jpk_kr_pd_inherit" model="ir.ui.view">
+        <field name="name">account.account.form.jpk_kr_pd</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Polska — JPK_KR_PD" name="l10n_pl_jpk_kr_pd">
+                    <group>
+                        <group string="Znaczniki księgowe (ZOiS)">
+                            <field name="l10n_pl_zois_marker_1"/>
+                            <field name="l10n_pl_zois_marker_2"/>
+                        </group>
+                        <group string="Podatek dochodowy (PD)">
+                            <field name="l10n_pl_pd_marker"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_l10n_pl_jpk_kr_pd" model="ir.actions.act_window">
+        <field name="name">JPK_KR_PD (JPK_CIT) Reports</field>
+        <field name="res_model">l10n_pl.jpk.kr.pd</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_l10n_pl_jpk_kr_pd"
+              name="JPK_KR_PD (JPK_CIT)"
+              parent="account.menu_finance_reports"
+              action="action_l10n_pl_jpk_kr_pd"
+              sequence="100"/>
+
+</odoo>

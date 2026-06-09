@@ -1,0 +1,249 @@
+# Coolify-ready Odoo 19.0 CE — Polish sp. z o.o.
+# Two-database setup: mnl.domain.com → mnl_db | bioleaf.domain.com → bioleaf_db
+#
+# Deploy: Coolify → New Resource → Docker Compose
+# Set env vars in Coolify UI → Environment tab (not in .env files)
+#
+# Odoo 19.0 includes FREE built-in Polish modules:
+#   l10n_pl                       — chart of accounts, GTU codes on products
+#   l10n_pl_edi                   — KSeF FA(3) e-invoicing
+#   l10n_pl_taxable_supply_date   — taxable supply date (P_6)
+#   l10n_pl_bank_verification     — biała lista / white list verification
+
+services:
+
+  # ── PostgreSQL 16 ─────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - odoo-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-odoo}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+        reservations:
+          memory: 512M
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ── Odoo 19.0 CE ─────────────────────────────────────────────────────────
+  # Custom image extends odoo:19.0 with xlsxwriter + xlrd for OCA Excel reports.
+  # Entrypoint wrapper injects ODOO_MASTER_PASSWORD into odoo.conf at start.
+  odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOST: db
+      PORT: "5432"
+      USER: ${POSTGRES_USER:-odoo}
+      PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}
+      # Injected into odoo.conf by the entrypoint wrapper (never persisted to git)
+      ODOO_MASTER_PASSWORD: ${ODOO_MASTER_PASSWORD:?ODOO_MASTER_PASSWORD required}
+    volumes:
+      - odoo-filestore:/var/lib/odoo
+      - ./odoo.conf:/etc/odoo/odoo.conf
+      - ./addons:/mnt/extra-addons:ro
+      - ./custom_addons:/mnt/custom-addons:ro
+      - ./scripts/odoo-entrypoint.sh:/entrypoint-wrapper.sh:ro
+    entrypoint: ["/entrypoint-wrapper.sh"]
+    command: ["odoo"]
+    networks:
+      - odoo-internal
+      - coolify
+    labels:
+      - "traefik.enable=true"
+
+      # ── HTTP → HTTPS redirect (both domains) ────────────────────────────
+      - "traefik.http.middlewares.odoo-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.odoo-https-redirect.redirectscheme.permanent=true"
+
+      - "traefik.http.routers.odoo-mnl-http.rule=Host(`${ODOO_DOMAIN_MNL:?ODOO_DOMAIN_MNL required}`)"
+      - "traefik.http.routers.odoo-mnl-http.entryPoints=http"
+      - "traefik.http.routers.odoo-mnl-http.middlewares=odoo-https-redirect@docker"
+
+      - "traefik.http.routers.odoo-bioleaf-http.rule=Host(`${ODOO_DOMAIN_BIOLEAF:?ODOO_DOMAIN_BIOLEAF required}`)"
+      - "traefik.http.routers.odoo-bioleaf-http.entryPoints=http"
+      - "traefik.http.routers.odoo-bioleaf-http.middlewares=odoo-https-redirect@docker"
+
+      # ── Security headers middleware (HSTS + frame-deny + nosniff + referrer) ─
+      - "traefik.http.middlewares.odoo-sec.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.odoo-sec.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.odoo-sec.headers.stsPreload=true"
+      - "traefik.http.middlewares.odoo-sec.headers.frameDeny=true"
+      - "traefik.http.middlewares.odoo-sec.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.odoo-sec.headers.referrerPolicy=strict-origin-when-cross-origin"
+
+      # ── General rate-limit (50/min, all paths) ──────────────────────────
+      - "traefik.http.middlewares.odoo-rl-general.ratelimit.average=50"
+      - "traefik.http.middlewares.odoo-rl-general.ratelimit.burst=20"
+      - "traefik.http.middlewares.odoo-rl-general.ratelimit.period=1m"
+
+      # ── Tight rate-limit for /web/login (5/min, anti-brute-force) ───────
+      - "traefik.http.middlewares.odoo-rl-login.ratelimit.average=5"
+      - "traefik.http.middlewares.odoo-rl-login.ratelimit.burst=10"
+      - "traefik.http.middlewares.odoo-rl-login.ratelimit.period=1m"
+
+      # ── Login routers (catch /web/login specifically) ───────────────────
+      - "traefik.http.routers.odoo-mnl-login.rule=Host(`${ODOO_DOMAIN_MNL}`) && PathPrefix(`/web/login`)"
+      - "traefik.http.routers.odoo-mnl-login.entryPoints=https"
+      - "traefik.http.routers.odoo-mnl-login.tls=true"
+      - "traefik.http.routers.odoo-mnl-login.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      - "traefik.http.routers.odoo-mnl-login.priority=200"
+      - "traefik.http.routers.odoo-mnl-login.middlewares=odoo-rl-login@docker,odoo-sec@docker"
+      - "traefik.http.routers.odoo-mnl-login.service=odoo-web"
+
+      - "traefik.http.routers.odoo-bioleaf-login.rule=Host(`${ODOO_DOMAIN_BIOLEAF}`) && PathPrefix(`/web/login`)"
+      - "traefik.http.routers.odoo-bioleaf-login.entryPoints=https"
+      - "traefik.http.routers.odoo-bioleaf-login.tls=true"
+      - "traefik.http.routers.odoo-bioleaf-login.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      - "traefik.http.routers.odoo-bioleaf-login.priority=200"
+      - "traefik.http.routers.odoo-bioleaf-login.middlewares=odoo-rl-login@docker,odoo-sec@docker"
+      - "traefik.http.routers.odoo-bioleaf-login.service=odoo-web"
+
+      # ── Block database manager paths (defense in depth on top of list_db=False) ─
+      - "traefik.http.middlewares.odoo-block-dbm.replacepathregex.regex=^/web/database/(manager|selector|backup|drop|duplicate|create|restore)"
+      - "traefik.http.middlewares.odoo-block-dbm.replacepathregex.replacement=/blocked"
+
+      # ── Main HTTPS routers ──────────────────────────────────────────────
+      - "traefik.http.routers.odoo-mnl.rule=Host(`${ODOO_DOMAIN_MNL}`)"
+      - "traefik.http.routers.odoo-mnl.entryPoints=https"
+      - "traefik.http.routers.odoo-mnl.tls=true"
+      - "traefik.http.routers.odoo-mnl.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      - "traefik.http.routers.odoo-mnl.priority=100"
+      - "traefik.http.routers.odoo-mnl.middlewares=odoo-block-dbm@docker,odoo-rl-general@docker,odoo-sec@docker"
+      - "traefik.http.routers.odoo-mnl.service=odoo-web"
+
+      - "traefik.http.routers.odoo-bioleaf.rule=Host(`${ODOO_DOMAIN_BIOLEAF}`)"
+      - "traefik.http.routers.odoo-bioleaf.entryPoints=https"
+      - "traefik.http.routers.odoo-bioleaf.tls=true"
+      - "traefik.http.routers.odoo-bioleaf.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      - "traefik.http.routers.odoo-bioleaf.priority=100"
+      - "traefik.http.routers.odoo-bioleaf.middlewares=odoo-block-dbm@docker,odoo-rl-general@docker,odoo-sec@docker"
+      - "traefik.http.routers.odoo-bioleaf.service=odoo-web"
+
+      # ── Shared backend service (port 8069) with sticky sessions ─────────
+      - "traefik.http.services.odoo-web.loadbalancer.server.port=8069"
+      - "traefik.http.services.odoo-web.loadbalancer.sticky.cookie=true"
+      - "traefik.http.services.odoo-web.loadbalancer.sticky.cookie.name=odoo_srv"
+      - "traefik.http.services.odoo-web.loadbalancer.sticky.cookie.secure=true"
+      - "traefik.http.services.odoo-web.loadbalancer.sticky.cookie.httpOnly=true"
+
+      # ── WebSocket + Longpolling router (port 8072) ──────────────────────
+      # Matches BOTH /websocket (Odoo bus) and /longpolling fallback paths.
+      - "traefik.http.routers.odoo-ws.rule=(Host(`${ODOO_DOMAIN_MNL}`) || Host(`${ODOO_DOMAIN_BIOLEAF}`)) && (PathPrefix(`/websocket`) || PathPrefix(`/longpolling`))"
+      - "traefik.http.routers.odoo-ws.entryPoints=https"
+      - "traefik.http.routers.odoo-ws.tls=true"
+      - "traefik.http.routers.odoo-ws.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      - "traefik.http.routers.odoo-ws.priority=300"
+      - "traefik.http.routers.odoo-ws.service=odoo-longpoll"
+      - "traefik.http.services.odoo-longpoll.loadbalancer.server.port=8072"
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:8069/web/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          # 2 workers × 1.5 GB hard + 2 cron threads × 1.5 GB + 1 GB overhead = 7 GB
+          # If you raise odoo.conf workers, also raise this. See SETUP.md sizing table.
+          cpus: "4.0"
+          memory: 7G
+        reservations:
+          memory: 1G
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # ── Backup sidecar ────────────────────────────────────────────────────────
+  # Runs pg_dump + filestore tar daily at 02:00. Optionally syncs to S3/R2.
+  db-backup:
+    image: alpine:3.20
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGUSER: ${POSTGRES_USER:-odoo}
+      PGHOST: db
+      DATABASES: "mnl_db bioleaf_db"
+      RETAIN_DAYS: "14"
+      FILESTORE_MNT: "/filestore"
+      # Optional off-host upload (S3 / R2 / MinIO)
+      BACKUP_S3_BUCKET: ${BACKUP_S3_BUCKET:-}
+      BACKUP_S3_ENDPOINT: ${BACKUP_S3_ENDPOINT:-}
+      AWS_ACCESS_KEY_ID: ${BACKUP_S3_KEY:-}
+      AWS_SECRET_ACCESS_KEY: ${BACKUP_S3_SECRET:-}
+      AWS_DEFAULT_REGION: ${BACKUP_S3_REGION:-auto}
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup-cron.sh:/backup-cron.sh:ro
+      - odoo-filestore:/filestore:ro
+    entrypoint:
+      - sh
+      - -c
+      - |
+        apk add --no-cache postgresql-client tar gzip aws-cli >/dev/null 2>&1 || \
+          apk add --no-cache postgresql-client tar gzip >/dev/null 2>&1;
+        echo '0 2 * * * /backup-cron.sh >> /proc/1/fd/1 2>&1' | crontab -;
+        echo '[$(date)] backup sidecar started';
+        crond -f -d 8
+    networks:
+      - odoo-internal
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep crond >/dev/null"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ── Named volumes ──────────────────────────────────────────────────────────────
+volumes:
+  pg-data:
+    driver: local
+  odoo-filestore:
+    driver: local
+
+# ── Networks ───────────────────────────────────────────────────────────────────
+networks:
+  odoo-internal:
+    driver: bridge
+    internal: true
+  coolify:
+    external: true

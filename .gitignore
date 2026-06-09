@@ -1,0 +1,43 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pgpass
+id_rsa*
+secrets/
+
+# Backup files (never commit)
+*.dump
+*.sql
+*.sql.gz
+*.tar.gz
+
+# Purchased third-party modules (download and place in addons/ manually)
+addons/*
+!addons/.gitkeep
+
+# Backups
+backups/*
+!backups/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Odoo filestore (if accidentally bind-mounted locally)
+filestore/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code local state
+.claude/
