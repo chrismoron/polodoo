@@ -15,5 +15,11 @@
   "website": "",
   "iban": "",
   "iban_vat": "",
-  "ksef_mode": "test"
+  "ksef_mode": "test",
+  "pkd_primary": "21.20.Z",
+  "pkd_secondary": [],
+  "journal_sale_code": "FV",
+  "journal_purchase_code": "FZ",
+  "opening_date": "2026-01-01",
+  "opening_csv": "configs/bioleaf-bilans-otwarcia.csv"
 }

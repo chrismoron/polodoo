@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>polodoo — Darmowa polska księgowość dla sp. z o.o.</title>
+<meta name="description" content="Darmowa, open-source, w pełni zgodna księgowość dla polskich sp. z o.o. KSeF, JPK_V7M(3), JPK_KR_PD, biała lista, MPP, ZUS/PIT. Oparte na Odoo 19 CE.">
+<meta property="og:title" content="polodoo — darmowa polska księgowość">
+<meta property="og:description" content="KSeF FA(3) + JPK_V7M(3) + JPK_KR_PD + biała lista + MPP. €0 licencji. Coolify-ready. AI-assisted.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://polodoo.pl">
+<style>
+:root {
+  --bg: #0f172a;
+  --bg-card: #1e293b;
+  --fg: #f1f5f9;
+  --fg-dim: #94a3b8;
+  --accent: #ef4444;
+  --accent-2: #fbbf24;
+  --green: #22c55e;
+  --border: #334155;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+header { padding: 24px 0; border-bottom: 1px solid var(--border); }
+.nav { display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; }
+.logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a { color: var(--fg-dim); text-decoration: none; font-size: 0.95rem; }
+.nav-links a:hover { color: var(--fg); }
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: #dc2626; transform: translateY(-1px); }
+.btn-secondary { background: var(--bg-card); color: var(--fg); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--fg-dim); }
+
+.hero { padding: 100px 0 80px; text-align: center; }
+.hero-flag {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--bg-card); padding: 6px 16px; border-radius: 100px;
+  font-size: 0.85rem; color: var(--fg-dim); margin-bottom: 24px;
+  border: 1px solid var(--border);
+}
+.hero h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+.hero h1 .gradient {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero p {
+  font-size: 1.25rem;
+  color: var(--fg-dim);
+  max-width: 700px;
+  margin: 0 auto 40px;
+}
+.hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.hero-meta {
+  margin-top: 48px;
+  display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;
+  color: var(--fg-dim); font-size: 0.9rem;
+}
+.hero-meta strong { color: var(--green); }
+
+section { padding: 80px 0; border-top: 1px solid var(--border); }
+section h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+section .lead { color: var(--fg-dim); font-size: 1.1rem; margin-bottom: 48px; max-width: 700px; }
+
+.grid { display: grid; gap: 24px; }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+}
+.card-icon { font-size: 2rem; margin-bottom: 16px; }
+.card h3 { font-size: 1.2rem; margin-bottom: 12px; }
+.card p { color: var(--fg-dim); font-size: 0.95rem; }
+
+.compliance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 24px;
+}
+.compliance-table th, .compliance-table td {
+  text-align: left;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.compliance-table th { color: var(--fg-dim); font-weight: 500; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.compliance-table tr:hover { background: rgba(255,255,255,0.02); }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 0.8rem; font-weight: 600; }
+.badge-ok { background: rgba(34,197,94,0.15); color: var(--green); }
+.badge-now { background: rgba(239,68,68,0.15); color: var(--accent); }
+.badge-soon { background: rgba(251,191,36,0.15); color: var(--accent-2); }
+
+.pricing { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+@media (max-width: 720px) { .pricing { grid-template-columns: 1fr; } }
+.pricing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+}
+.pricing-card.featured { border-color: var(--accent); }
+.pricing-card h3 { font-size: 1.4rem; margin-bottom: 8px; }
+.pricing-card .price {
+  font-size: 3rem; font-weight: 800; margin: 16px 0;
+}
+.pricing-card .price .unit { font-size: 1rem; color: var(--fg-dim); font-weight: 400; }
+.pricing-card ul { list-style: none; margin-top: 24px; }
+.pricing-card li { padding: 8px 0; padding-left: 28px; position: relative; color: var(--fg-dim); }
+.pricing-card li::before {
+  content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700;
+}
+.pricing-card .btn { margin-top: 24px; width: 100%; text-align: center; }
+
+footer {
+  padding: 60px 0 40px;
+  border-top: 1px solid var(--border);
+  color: var(--fg-dim);
+  font-size: 0.9rem;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+@media (max-width: 720px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+.footer-grid h4 { color: var(--fg); margin-bottom: 12px; font-size: 0.95rem; }
+.footer-grid a { color: var(--fg-dim); text-decoration: none; display: block; padding: 4px 0; font-size: 0.9rem; }
+.footer-grid a:hover { color: var(--fg); }
+.footer-bottom { text-align: center; padding-top: 24px; border-top: 1px solid var(--border); }
+
+.code-block {
+  background: #020617;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 16px 0;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  font-size: 0.9rem;
+  overflow-x: auto;
+  color: #e2e8f0;
+}
+.code-block .comment { color: #64748b; }
+.code-block .accent { color: var(--accent-2); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <div class="logo">pol<span>odoo</span></div>
+    <div class="nav-links">
+      <a href="#features">Funkcje</a>
+      <a href="#compliance">Zgodność</a>
+      <a href="#pricing">Cennik</a>
+      <a href="https://github.com/KSEGIT/polodoo" target="_blank">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-flag">🇵🇱 Open Source · LGPL-3 · €0 licencji</div>
+    <h1>
+      Darmowa księgowość<br>
+      dla <span class="gradient">polskiej sp. z o.o.</span>
+    </h1>
+    <p>
+      Pełna księgowość, KSeF, JPK_V7M(3), JPK_CIT, biała lista, ZUS/PIT —
+      wszystko zgodne z polskim prawem, w pełni open-source, samohostowane.
+      Bez ukrytych kosztów, bez vendor lock-in.
+    </p>
+    <div class="hero-cta">
+      <a href="https://github.com/KSEGIT/polodoo" class="btn btn-primary">⭐ Pobierz na GitHub</a>
+      <a href="#features" class="btn btn-secondary">Zobacz funkcje</a>
+    </div>
+    <div class="hero-meta">
+      <div>✓ <strong>0 zł</strong> za licencje</div>
+      <div>✓ KSeF API v2.6.0</div>
+      <div>✓ JPK_V7M(3) od 2026-02-01</div>
+      <div>✓ JPK_CIT do 2027-07-31</div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="container">
+    <h2>Wszystko czego potrzebuje sp. z o.o.</h2>
+    <p class="lead">
+      Zbudowane na Odoo 19 Community Edition + cztery polskie moduły custom (LGPL-3).
+      Bez płatnych dodatków od Trilab czy innych dostawców.
+    </p>
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="card-icon">📄</div>
+        <h3>KSeF FA(3)</h3>
+        <p>Pełna integracja z Krajowym Systemem e-Faktur 2.0. Wysyłka, odbiór, UPO, kody QR, tryb offline24. Zgodne z mandatem od 2026-04-01.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>JPK_V7M(3) i JPK_V7K(3)</h3>
+        <p>Generator XML zgodny ze schematem MF z 2025-12-19. Strict XSD compliance — namespacy, kolejność elementów, typy danych zweryfikowane.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📈</div>
+        <h3>JPK_KR_PD (JPK_CIT)</h3>
+        <p>Pełny generator z sekcjami Naglowek, Podmiot1, ZOiS, Dziennik, KontoZapis, Ctrl, RPD. Termin: 31 lipca 2027 dla typowej sp. z o.o.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚪</div>
+        <h3>Biała Lista</h3>
+        <p>Automatyczna weryfikacja kontrahentów przy płatnościach > 15 000 zł. Wbudowane w Odoo 19 — brak osobnego modułu.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💸</div>
+        <h3>MPP (Split Payment)</h3>
+        <p>Mechanizm Podzielonej Płatności w fakturach KSeF (P_18A). Auto-sugestia gdy wartość przekracza 15 000 zł.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">👥</div>
+        <h3>ZUS / PIT</h3>
+        <p>Płace, ZUS DRA/RCA, PIT-4R, PIT-11. Moduł vitalibondar (LGPL-3) zintegrowany przez setup script.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💰</div>
+        <h3>NBP kursy</h3>
+        <p>Codzienne kursy walut z Tabeli A Narodowego Banku Polskiego. Bez kluczy API, bez subskrypcji.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏢</div>
+        <h3>Środki trwałe</h3>
+        <p>Pełna amortyzacja przez OCA <code>account_asset_management</code>. Liniowa, degresywna, kombinacja, prorata.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📚</div>
+        <h3>Raporty księgowe</h3>
+        <p>Zestawienie Obrotów i Sald, Dziennik, Rozrachunki wiekowane, Open Items — przez OCA <code>account_financial_report</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="signing">
+  <div class="container">
+    <h2>Prezes podpisuje sam</h2>
+    <p class="lead">
+      Po deregulacji z 2014 r. (Dz.U. 2014 poz. 768) nie ma już wymogu certyfikatu dla osoby
+      prowadzącej księgi wewnątrz firmy. To zmienia model biznesowy.
+    </p>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Podstawa prawna</h3>
+        <p style="margin-bottom:12px"><strong>Art. 4 ust. 5 UoR</strong> — zarząd może powierzyć prowadzenie ksiąg sam sobie (pisemne oświadczenie).</p>
+        <p style="margin-bottom:12px"><strong>Art. 52 ust. 2 UoR</strong> — sprawozdanie podpisuje "osoba prowadząca księgi" i "kierownik jednostki". Gdy to ta sama osoba — wystarczy jeden podpis.</p>
+        <p><strong>Deregulacja 2014</strong> — usunięto wszystkie wymogi kwalifikacyjne dla wewnętrznej księgowości.</p>
+      </div>
+      <div class="card">
+        <h3>Co to znaczy w praktyce</h3>
+        <p style="margin-bottom:12px">✓ Prezes prowadzi Odoo z AI (Claude, ChatGPT)</p>
+        <p style="margin-bottom:12px">✓ Prezes podpisuje Bilans i RZiS sam Profilem Zaufanym</p>
+        <p style="margin-bottom:12px">✓ Audytor weryfikuje — ale nie musi nic podpisywać</p>
+        <p>✓ Brak miesięcznej faktury od biura rachunkowego</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="compliance">
+  <div class="container">
+    <h2>Kalendarium zgodności 2026/2027</h2>
+    <p class="lead">Co i kiedy musi zrobić sp. z o.o. Wszystko obsłużone w polodoo.</p>
+    <table class="compliance-table">
+      <thead>
+        <tr>
+          <th>Termin</th>
+          <th>Obowiązek</th>
+          <th>Gdzie</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Każdy 25.</td>
+          <td><strong>JPK_V7M(3)</strong> za poprzedni miesiąc</td>
+          <td>e-deklaracje.mf.gov.pl</td>
+          <td><span class="badge badge-ok">Obsłużone</span></td>
+        </tr>
+        <tr>
+          <td>Każdy 15.</td>
+          <td>ZUS DRA/RCA + płatność</td>
+          <td>PUE ZUS / Płatnik</td>
+          <td><span class="badge badge-ok">Obsłużone</span></td>
+        </tr>
+        <tr>
+          <td>Każda faktura B2B</td>
+          <td><strong>KSeF FA(3)</strong> real-time</td>
+          <td>api.ksef.mf.gov.pl/api/v2</td>
+          <td><span class="badge badge-ok">Obsłużone</span></td>
+        </tr>
+        <tr>
+          <td>Płatność > 15 000 zł</td>
+          <td>Biała Lista (auto)</td>
+          <td>wl-api.mf.gov.pl</td>
+          <td><span class="badge badge-ok">Obsłużone</span></td>
+        </tr>
+        <tr>
+          <td>2026-08-01</td>
+          <td>Nr KSeF w tytułach przelewów MPP</td>
+          <td>Banki</td>
+          <td><span class="badge badge-now">Aktywne</span></td>
+        </tr>
+        <tr>
+          <td>2027-01-31</td>
+          <td>PIT-4R roczny</td>
+          <td>PUE ZUS</td>
+          <td><span class="badge badge-soon">Wkrótce</span></td>
+        </tr>
+        <tr>
+          <td>2027-03-31</td>
+          <td>CIT-8 roczny + płatność</td>
+          <td>MF online</td>
+          <td><span class="badge badge-soon">Wkrótce</span></td>
+        </tr>
+        <tr>
+          <td>2027-06-30</td>
+          <td>Sprawozdanie finansowe → KRS</td>
+          <td>ekrs.ms.gov.pl</td>
+          <td><span class="badge badge-soon">Wkrótce</span></td>
+        </tr>
+        <tr>
+          <td>2027-07-31</td>
+          <td><strong>JPK_KR_PD</strong> za rok 2026</td>
+          <td>e-deklaracje.mf.gov.pl</td>
+          <td><span class="badge badge-ok">Obsłużone</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="quickstart">
+  <div class="container">
+    <h2>Szybki start (5 minut)</h2>
+    <p class="lead">
+      Pełne wdrożenie od zera. Wymagane: serwer z Docker (~$10/mc na DigitalOcean
+      lub własny home server) i dwie subdomeny.
+    </p>
+    <div class="code-block">
+<span class="comment"># 1. Klonuj repo</span>
+git clone https://github.com/KSEGIT/polodoo.git
+cd polodoo
+
+<span class="comment"># 2. Konfiguracja</span>
+cp .env.example .env
+nano .env  <span class="comment"># ustaw POSTGRES_PASSWORD, ODOO_MASTER_PASSWORD, domeny</span>
+
+<span class="comment"># 3. Wszystko za jednym razem</span>
+make <span class="accent">quickstart</span>
+
+<span class="comment"># 4. Po starcie — onboarding spółki (NIP, REGON, IBAN, KSeF mode)</span>
+make onboard-mnl
+make onboard-bioleaf
+
+<span class="comment"># 5. Instalacja modułów</span>
+make init-mnl
+make init-bioleaf
+    </div>
+    <p style="text-align:center; margin-top: 24px;">
+      <a href="https://github.com/KSEGIT/polodoo/blob/main/SETUP.md" class="btn btn-secondary">📖 Pełna dokumentacja wdrożenia</a>
+    </p>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="container">
+    <h2>Model biznesowy</h2>
+    <p class="lead">Kod jest darmowy. Zarabiamy na usługach wdrożeniowych.</p>
+    <div class="pricing">
+      <div class="pricing-card">
+        <h3>💚 polodoo Community</h3>
+        <div class="price">€0<span class="unit"> / na zawsze</span></div>
+        <p style="color: var(--fg-dim)">Sam wdrożysz, sam administrujesz, AI Ci pomoże.</p>
+        <ul>
+          <li>Wszystkie moduły custom (KSeF, JPK_V7M, JPK_KR_PD, NBP)</li>
+          <li>OCA + Odoo CE + l10n_pl_payroll</li>
+          <li>Pełna dokumentacja PL + EN</li>
+          <li>Schematy XSD z MF (zaktualizowane)</li>
+          <li>GitHub Issues — community support</li>
+          <li>LGPL-3 — możesz zamknąć swoje fork-i</li>
+        </ul>
+        <a href="https://github.com/KSEGIT/polodoo" class="btn btn-secondary">Pobierz na GitHub</a>
+      </div>
+      <div class="pricing-card featured">
+        <h3>🚀 polodoo Pro</h3>
+        <div class="price">od €299<span class="unit"> / wdrożenie</span></div>
+        <p style="color: var(--fg-dim)">My wdrażamy, my migrujemy, my szkolimy.</p>
+        <ul>
+          <li>Wdrożenie na Twoim Coolify / cloud / on-premise</li>
+          <li>Migracja z Comarch Optima / Symfonia / inne</li>
+          <li>Konfiguracja KSeF + certyfikat produkcyjny</li>
+          <li>Setup automatyzacji (faktury, JPK, ZUS)</li>
+          <li>Custom moduły pod Twoje procesy</li>
+          <li>Szkolenie Zarządu + materiały PL</li>
+          <li>SLA (opcjonalnie)</li>
+        </ul>
+        <a href="mailto:hello@polodoo.pl?subject=polodoo%20Pro%20zapytanie" class="btn btn-primary">Skontaktuj się</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="margin-bottom: 12px;">pol<span style="color: var(--accent)">odoo</span></div>
+        <p>Darmowa polska księgowość dla sp. z o.o.<br>Open source, LGPL-3, bez kompromisów.</p>
+      </div>
+      <div>
+        <h4>Projekt</h4>
+        <a href="https://github.com/KSEGIT/polodoo" target="_blank">GitHub</a>
+        <a href="https://github.com/KSEGIT/polodoo/blob/main/README.md">Dokumentacja</a>
+        <a href="https://github.com/KSEGIT/polodoo/blob/main/LEGAL.md">Podstawy prawne</a>
+        <a href="https://github.com/KSEGIT/polodoo/issues">Issues</a>
+      </div>
+      <div>
+        <h4>Zgodność</h4>
+        <a href="https://ksef.podatki.gov.pl" target="_blank">KSeF</a>
+        <a href="https://www.podatki.gov.pl/podatki-firmowe/jednolity-plik-kontrolny/" target="_blank">JPK</a>
+        <a href="https://www.podatki.gov.pl/wykaz-podatnikow-vat-wyszukiwarka/" target="_blank">Biała Lista</a>
+        <a href="https://www.zus.pl/firmy/program-platnik/pobierz" target="_blank">Płatnik</a>
+      </div>
+      <div>
+        <h4>Społeczność</h4>
+        <a href="https://github.com/KSEGIT/polodoo/discussions">Discussions</a>
+        <a href="https://github.com/KSEGIT/polodoo/issues/new">Zgłoś bug</a>
+        <a href="https://github.com/KSEGIT/polodoo/blob/main/AGENT_PROMPT.md">Onboarding AI</a>
+        <a href="https://github.com/KSEGIT/polodoo/pulls">Pull Requests</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 polodoo · LGPL-3.0 · <a href="https://github.com/KSEGIT/polodoo" style="color: var(--fg-dim)">github.com/KSEGIT/polodoo</a></p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -5,16 +5,20 @@ SHELL := /bin/bash
 MNL_DB    := mnl_db
 BIOLEAF_DB := bioleaf_db
 
-.PHONY: help up down restart logs logs-db pull shell-mnl shell-bioleaf \
+.PHONY: help quickstart up down restart logs logs-db pull shell-mnl shell-bioleaf \
         create-dbs init-mnl init-bioleaf update-mnl update-bioleaf \
         onboard-mnl onboard-bioleaf onboard-mnl-from-json onboard-bioleaf-from-json \
-        list-tax-offices \
+        list-tax-offices preflight \
         backup restore ps
 
 help:
 	@echo ""
-	@echo "  Odoo — Available commands"
+	@echo "  polodoo — dostępne komendy"
 	@echo "  ──────────────────────────────────────────────────────"
+	@echo ""
+	@echo "  make quickstart      ⚡ Pierwsza instalacja od zera (5 minut)"
+	@echo "                       Robi: setup-submodules.sh + docker build + up -d"
+	@echo ""
 	@echo "  make up              Start all services"
 	@echo "  make down            Stop all services"
 	@echo "  make restart         Restart Odoo (not DB)"
@@ -40,6 +44,66 @@ help:
 	@echo ""
 	@echo "  make backup          Run manual backup"
 	@echo ""
+
+quickstart: preflight
+	@echo ""
+	@echo "🚀 polodoo quickstart"
+	@echo "═══════════════════════════════════════════════════════════"
+	@echo ""
+	@echo "Krok 1/5: Pobieranie submoduli OCA + payroll..."
+	@./scripts/setup-submodules.sh
+	@echo ""
+	@echo "Krok 2/5: Tworzenie sieci 'coolify' (lokalna namiastka)..."
+	@docker network inspect coolify >/dev/null 2>&1 || docker network create coolify
+	@echo ""
+	@echo "Krok 3/5: Budowanie obrazu Odoo z naszym Dockerfile..."
+	@docker compose build
+	@echo ""
+	@echo "Krok 4/5: Start usług..."
+	@docker compose up -d
+	@echo ""
+	@echo "Krok 5/5: Oczekiwanie aż Odoo będzie zdrowe (do 2 minut)..."
+	@for i in $$(seq 1 24); do \
+		if docker compose ps odoo --format '{{.Health}}' | grep -q healthy; then \
+			echo "  ✓ Odoo healthy"; break; \
+		fi; \
+		echo "  …czekam $$i/24 (5s każdy)"; sleep 5; \
+	done
+	@echo ""
+	@echo "═══════════════════════════════════════════════════════════"
+	@echo "✅ Stack stoi. Następne kroki:"
+	@echo ""
+	@echo "  1. Stwórz bazy mnl_db i bioleaf_db:"
+	@echo "     • Tymczasowo: sed -i.bak 's/^list_db = False/list_db = True/' odoo.conf && make restart"
+	@echo "     • Otwórz: https://$$ODOO_DOMAIN_MNL/web/database/manager"
+	@echo "     • Master password = wartość ODOO_MASTER_PASSWORD z .env"
+	@echo "     • Stwórz mnl_db i bioleaf_db (Polish, no demo data)"
+	@echo "     • Wróć: sed -i.bak 's/^list_db = True/list_db = False/' odoo.conf && make restart"
+	@echo ""
+	@echo "  2. Onboarding danych spółki:"
+	@echo "     make onboard-mnl"
+	@echo "     make onboard-bioleaf"
+	@echo ""
+	@echo "  3. Instalacja modułów:"
+	@echo "     make init-mnl"
+	@echo "     make init-bioleaf"
+	@echo ""
+	@echo "  4. Weryfikacja:"
+	@echo "     Otwórz https://$$ODOO_DOMAIN_MNL — powinien wpuścić do Odoo"
+	@echo "     Accounting → Reporting → JPK_V7 → kliknij 'Verify K-Field Mapping'"
+	@echo ""
+	@echo "Pełna instrukcja: SETUP.md"
+	@echo ""
+
+preflight:
+	@command -v docker >/dev/null 2>&1 || { echo "❌ docker nie zainstalowany"; exit 1; }
+	@docker info >/dev/null 2>&1 || { echo "❌ docker daemon nie odpowiada"; exit 1; }
+	@[ -f .env ] || { echo "❌ Brak .env. Skopiuj .env.example → .env i uzupełnij sekrety"; exit 1; }
+	@grep -q "^POSTGRES_PASSWORD=.\+" .env || { echo "❌ POSTGRES_PASSWORD pusty w .env"; exit 1; }
+	@grep -q "^ODOO_MASTER_PASSWORD=.\+" .env || { echo "❌ ODOO_MASTER_PASSWORD pusty w .env"; exit 1; }
+	@grep -q "^ODOO_DOMAIN_MNL=.\+" .env || { echo "❌ ODOO_DOMAIN_MNL pusty w .env"; exit 1; }
+	@grep -q "^ODOO_DOMAIN_BIOLEAF=.\+" .env || { echo "❌ ODOO_DOMAIN_BIOLEAF pusty w .env"; exit 1; }
+	@echo "✓ preflight OK"
 
 up:
 	docker compose up -d

@@ -1,0 +1,144 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint Python + XML + bash
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libxml2-utils shellcheck
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dev tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyflakes
+
+      - name: Compile-check all Python files
+        run: |
+          set -e
+          fail=0
+          while IFS= read -r -d '' f; do
+            if ! python -m py_compile "$f" 2>&1; then
+              echo "::error file=$f::py_compile failed"
+              fail=1
+            fi
+          done < <(find custom_addons scripts -name '*.py' -print0)
+          exit $fail
+
+      - name: Pyflakes (warnings only — does not fail build)
+        run: |
+          pyflakes custom_addons scripts || true
+        continue-on-error: true
+
+      - name: XML well-formedness
+        run: |
+          set -e
+          fail=0
+          while IFS= read -r -d '' f; do
+            if ! xmllint --noout "$f" 2>&1; then
+              echo "::error file=$f::xmllint failed"
+              fail=1
+            fi
+          done < <(find custom_addons -name '*.xml' -print0)
+          exit $fail
+
+      - name: Validate embedded XSDs (self-consistency)
+        run: |
+          set -e
+          for f in schemas/*.xsd; do
+            xmllint --noout --schema http://www.w3.org/2001/XMLSchema.xsd "$f" 2>&1 || \
+              { echo "::error file=$f::XSD is not a valid schema"; exit 1; }
+          done
+
+      - name: Shellcheck bash scripts
+        run: |
+          set -e
+          shopt -s nullglob
+          for f in scripts/*.sh; do
+            shellcheck -S warning "$f"
+          done
+
+  docker-build:
+    name: Docker image builds
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: polodoo:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  docker-compose-config:
+    name: docker-compose validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate docker-compose syntax
+        env:
+          POSTGRES_PASSWORD: ci-stub
+          ODOO_MASTER_PASSWORD: ci-stub
+          ODOO_DOMAIN_MNL: mnl.ci.invalid
+          ODOO_DOMAIN_BIOLEAF: bioleaf.ci.invalid
+        run: |
+          docker compose config -q || \
+            { echo "::error::docker-compose.yml syntax invalid"; exit 1; }
+
+      - name: Validate override file separately
+        env:
+          POSTGRES_PASSWORD: ci-stub
+          ODOO_MASTER_PASSWORD: ci-stub
+          ODOO_DOMAIN_MNL: mnl.ci.invalid
+          ODOO_DOMAIN_BIOLEAF: bioleaf.ci.invalid
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.override.yml config -q || \
+            { echo "::error::override.yml syntax invalid"; exit 1; }
+
+  manifest-versions:
+    name: Manifest versions consistent
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: All custom modules pinned to 19.0.x
+        run: |
+          set -e
+          bad=0
+          for m in custom_addons/*/__manifest__.py; do
+            v=$(python3 -c "exec(open('$m').read().replace('{','dict(').replace('}',')').replace(':','=') if False else ''); print(eval(open('$m').read())['version'])" 2>/dev/null || \
+                grep -oP "'version'\s*:\s*'\K[^']+" "$m")
+            if [[ "$v" != 19.0.* ]]; then
+              echo "::error file=$m::version is '$v' — must start with 19.0."
+              bad=1
+            fi
+          done
+          exit $bad
