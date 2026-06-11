@@ -1,0 +1,42 @@
+                   GNU LESSER GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+
+ Copyright (C) 2026 Daniel Kiska and contributors to the polodoo project.
+
+ This project's custom Odoo modules and supporting scripts are licensed
+ under the GNU Lesser General Public License version 3 (LGPL-3.0), matching
+ the license of Odoo Community Edition.
+
+ Full license text:
+   https://www.gnu.org/licenses/lgpl-3.0.txt
+
+ Embedded Polish Ministry of Finance XSD schemas (schemas/*.xsd) are
+ government-published documents and are not subject to this license.
+
+ OCA submodules added via scripts/setup-submodules.sh remain under their
+ upstream AGPL-3 licenses; this repository does not redistribute them.
+
+ ----------------------------------------------------------------------
+
+ LGPL-3.0 SUMMARY
+
+ This is free software: you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the
+ Free Software Foundation, either version 3 of the License, or (at your
+ option) any later version.
+
+ This software is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+ ----------------------------------------------------------------------
+
+ COMMERCIAL SERVICES
+
+ The author offers paid automation, onboarding, deployment, and support
+ services around this open-source codebase. Use of the code itself is
+ free under LGPL-3; commercial service offerings are separate engagements.

@@ -9,7 +9,6 @@
         <!-- Run at 09:00 daily — NBP publishes Table A on business days by ~08:15 -->
         <field name="interval_number">1</field>
         <field name="interval_type">days</field>
-        <field name="numbercall">-1</field>
         <field name="active">True</field>
         <field name="priority">10</field>
     </record>

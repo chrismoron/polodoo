@@ -1,0 +1,34 @@
+# Translation of Odoo Server.
+# Polish translation for l10n_pl_edi_fixes.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-06-10\n"
+"Language-Team: Polish (https://www.transifex.com/odoo/teams/41243/pl/)\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+
+#. module: l10n_pl_edi_fixes
+#: model_terms:ir.ui.view,arch_db:l10n_pl_edi_fixes.view_move_form_l10n_pl_edi_fixes
+msgid "Polska — KSeF / JPK"
+msgstr "Polska — KSeF / JPK"
+
+#. module: l10n_pl_edi_fixes
+#: model_terms:ir.ui.view,arch_db:l10n_pl_edi_fixes.view_move_form_l10n_pl_edi_fixes
+msgid "Płatność i zwolnienia (KSeF FA(3))"
+msgstr "Płatność i zwolnienia (KSeF FA(3))"
+
+#. module: l10n_pl_edi_fixes
+#: model:ir.model.fields,field_description:l10n_pl_edi_fixes.field_account_move__l10n_pl_split_payment
+msgid "Split Payment — MPP"
+msgstr "Mechanizm Podzielonej Płatności (MPP)"
+
+#. module: l10n_pl_edi_fixes
+#: model:ir.model.fields,field_description:l10n_pl_edi_fixes.field_account_move__l10n_pl_vat_exemption
+msgid "Podstawa zwolnienia VAT"
+msgstr "Podstawa zwolnienia z VAT"

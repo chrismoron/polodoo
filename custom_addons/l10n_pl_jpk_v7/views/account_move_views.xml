@@ -7,7 +7,7 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="l10n_pl_edi_fixes.view_move_form_l10n_pl_edi_fixes"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[contains(@string,'Płatność')]" position="after">
+            <xpath expr="//page[@name='l10n_pl_compliance']/group" position="inside">
                 <group string="JPK_V7 Ewidencja">
                     <field name="l10n_pl_jpk_tag"/>
                 </group>

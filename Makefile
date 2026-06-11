@@ -7,6 +7,8 @@ BIOLEAF_DB := bioleaf_db
 
 .PHONY: help up down restart logs logs-db pull shell-mnl shell-bioleaf \
         create-dbs init-mnl init-bioleaf update-mnl update-bioleaf \
+        onboard-mnl onboard-bioleaf onboard-mnl-from-json onboard-bioleaf-from-json \
+        list-tax-offices \
         backup restore ps
 
 help:
@@ -29,6 +31,13 @@ help:
 	@echo ""
 	@echo "  make shell-mnl       Open Odoo Python shell for mnl_db"
 	@echo "  make shell-bioleaf   Open Odoo Python shell for bioleaf_db"
+	@echo ""
+	@echo "  make onboard-mnl     Interactive PL company onboarding (mnl_db)"
+	@echo "  make onboard-bioleaf Interactive PL company onboarding (bioleaf_db)"
+	@echo "  make onboard-mnl-from-json     Apply configs/mnl.json non-interactive"
+	@echo "  make onboard-bioleaf-from-json Apply configs/bioleaf.json non-interactive"
+	@echo "  make list-tax-offices DB=mnl_db   List all Urząd Skarbowy codes"
+	@echo ""
 	@echo "  make backup          Run manual backup"
 	@echo ""
 
@@ -74,13 +83,12 @@ shell-bioleaf:
 # Sensible minimum for full Polish bookkeeping.
 # Add point_of_sale, website, fleet etc. later per company need — they pull in
 # significant configuration that should not auto-install on first init.
-BASE_MODULES := l10n_pl,l10n_pl_edi,l10n_pl_taxable_supply_date,l10n_pl_bank_verification,\
-account,account_asset_management,account_financial_report,account_tax_balance,\
-sale_management,purchase,stock,\
-hr,hr_payroll,l10n_pl_payroll,\
-crm,project,maintenance,\
-mail,calendar,contacts,\
-l10n_pl_edi_fixes,l10n_pl_jpk_v7,l10n_pl_jpk_kr_pd,l10n_pl_nbp_rates
+# Notes on what's excluded and why:
+#  - hr_payroll, hr_contract, l10n_pl_taxable_supply_date are Enterprise-only
+#    in Odoo 19. The vitalibondar/l10n-pl-payroll module depends on hr_contract
+#    so it cannot be installed on CE either. Handle payroll externally in
+#    Płatnik (free ZUS desktop app) and book journal entries manually.
+BASE_MODULES := l10n_pl,l10n_pl_edi,l10n_pl_bank_verification,account,account_asset_management,account_financial_report,account_tax_balance,sale_management,purchase,stock,hr,crm,project,maintenance,mail,calendar,contacts,l10n_pl_edi_fixes,l10n_pl_jpk_v7,l10n_pl_jpk_kr_pd,l10n_pl_nbp_rates
 
 init-mnl:
 	docker compose exec odoo odoo \
@@ -103,6 +111,26 @@ update-mnl:
 
 update-bioleaf:
 	docker compose exec odoo odoo -d $(BIOLEAF_DB) -u $(MODULES) --stop-after-init
+
+# ── Polish sp. z o.o. onboarding ─────────────────────────────────────────────
+# Interactive: asks NIP/KRS/REGON/address/US/bank/KSeF and applies via odoo shell.
+# JSON variants apply a pre-saved configs/<company>.json non-interactively.
+onboard-mnl:
+	./scripts/onboard.py --db $(MNL_DB) --save configs/mnl.json
+
+onboard-bioleaf:
+	./scripts/onboard.py --db $(BIOLEAF_DB) --save configs/bioleaf.json
+
+onboard-mnl-from-json:
+	./scripts/onboard.py --db $(MNL_DB) --from-json configs/mnl.json --non-interactive
+
+onboard-bioleaf-from-json:
+	./scripts/onboard.py --db $(BIOLEAF_DB) --from-json configs/bioleaf.json --non-interactive
+
+# Usage: make list-tax-offices DB=mnl_db | grep -i WOLOM
+DB ?= $(MNL_DB)
+list-tax-offices:
+	@./scripts/onboard.py --db $(DB) --list-tax-offices
 
 backup:
 	./scripts/backup.sh

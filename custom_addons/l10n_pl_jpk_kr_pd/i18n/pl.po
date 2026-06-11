@@ -1,0 +1,180 @@
+# Translation of Odoo Server.
+# Polish translation for l10n_pl_jpk_kr_pd.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-06-10\n"
+"Language-Team: Polish (https://www.transifex.com/odoo/teams/41243/pl/)\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.actions.act_window,name:l10n_pl_jpk_kr_pd.action_l10n_pl_jpk_kr_pd
+#: model:ir.ui.menu,name:l10n_pl_jpk_kr_pd.menu_l10n_pl_jpk_kr_pd
+msgid "JPK_KR_PD (JPK_CIT) Reports"
+msgstr "Raporty JPK_KR_PD (JPK_CIT)"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model_terms:ir.ui.view,arch_db:l10n_pl_jpk_kr_pd.view_l10n_pl_jpk_kr_pd_form
+msgid "JPK_KR_PD Report"
+msgstr "Raport JPK_KR_PD"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model_terms:ir.ui.view,arch_db:l10n_pl_jpk_kr_pd.view_l10n_pl_jpk_kr_pd_form
+msgid "Generate XML"
+msgstr "Generuj XML"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model_terms:ir.ui.view,arch_db:l10n_pl_jpk_kr_pd.view_l10n_pl_jpk_kr_pd_form
+msgid "Period &amp; Fiscal Year"
+msgstr "Okres i rok obrotowy"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model_terms:ir.ui.view,arch_db:l10n_pl_jpk_kr_pd.view_l10n_pl_jpk_kr_pd_form
+msgid "Result"
+msgstr "Wynik"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model_terms:ir.ui.view,arch_db:l10n_pl_jpk_kr_pd.view_l10n_pl_jpk_kr_pd_form
+msgid "Notes"
+msgstr "Notatki"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model_terms:ir.ui.view,arch_db:l10n_pl_jpk_kr_pd.view_l10n_pl_jpk_kr_pd_form
+msgid "RPD — Manual Income-Tax Adjustments"
+msgstr "RPD — Ręczne korekty podatku dochodowego"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__name
+msgid "Report Name"
+msgstr "Nazwa raportu"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__date_from
+msgid "Period From"
+msgstr "Okres od"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__date_to
+msgid "Period To"
+msgstr "Okres do"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__fiscal_year_from
+msgid "Fiscal Year From"
+msgstr "Rok obrotowy od"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__fiscal_year_to
+msgid "Fiscal Year To"
+msgstr "Rok obrotowy do"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__cel_zlozenia
+msgid "Purpose of Filing"
+msgstr "Cel złożenia"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__account_count
+msgid "Accounts Included"
+msgstr "Konta w raporcie"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__move_count
+msgid "Moves Included"
+msgstr "Zapisy w raporcie"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__posting_count
+msgid "Postings Included"
+msgstr "Pozycje w raporcie"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__state
+msgid "Status"
+msgstr "Status"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__company_id
+msgid "Company"
+msgstr "Firma"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__filename
+msgid "Filename"
+msgstr "Nazwa pliku"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__xml_file
+msgid "JPK_KR_PD XML"
+msgstr "Plik JPK_KR_PD XML"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__notes
+msgid "Notes"
+msgstr "Notatki"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__zois_variant
+msgid "ZOiS Variant"
+msgstr "Wariant ZOiS"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_account_account__l10n_pl_zois_marker_1
+msgid "ZOiS Marker (S_12_1)"
+msgstr "Znacznik ZOiS (S_12_1)"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_account_account__l10n_pl_zois_marker_2
+msgid "ZOiS Marker (S_12_2)"
+msgstr "Znacznik ZOiS (S_12_2)"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_account_account__l10n_pl_pd_marker
+msgid "PD Marker (S_12_3)"
+msgstr "Znacznik PD (S_12_3)"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__rpd_k3
+msgid "RPD K_3 — Revenue taxable this year, booked prior"
+msgstr "RPD K_3 — Przychody opodatkowane w bieżącym roku, zaksięgowane wcześniej"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__rpd_k6
+msgid "RPD K_6 — Costs recognised this year, booked prior"
+msgstr "RPD K_6 — Koszty uznane w bieżącym roku, zaksięgowane wcześniej"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__rpd_k7
+msgid "RPD K_7 — Taxable revenue not booked"
+msgstr "RPD K_7 — Przychody opodatkowane niezaksięgowane"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__rpd_k8
+msgid "RPD K_8 — Deductible costs not booked"
+msgstr "RPD K_8 — Koszty uzyskania przychodu niezaksięgowane"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields,field_description:l10n_pl_jpk_kr_pd.field_l10n_pl_jpk_kr_pd__kod_urzedu
+msgid "Kod Urzędu Skarbowego"
+msgstr "Kod Urzędu Skarbowego"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields.selection,name:l10n_pl_jpk_kr_pd.selection__l10n_pl_jpk_kr_pd__state__draft
+msgid "Draft"
+msgstr "Wersja robocza"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields.selection,name:l10n_pl_jpk_kr_pd.selection__l10n_pl_jpk_kr_pd__state__generated
+msgid "Generated"
+msgstr "Wygenerowany"
+
+#. module: l10n_pl_jpk_kr_pd
+#: model:ir.model.fields.selection,name:l10n_pl_jpk_kr_pd.selection__l10n_pl_jpk_kr_pd__state__submitted
+msgid "Submitted to MF"
+msgstr "Złożony w MF"

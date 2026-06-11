@@ -1,0 +1,19 @@
+{
+  "db": "bioleaf_db",
+  "name": "Bioleaf Pharma sp. z o.o.",
+  "nip": "1251407432",
+  "krs": "0000262922",
+  "regon": "140680928",
+  "share_capital": "550000",
+  "street": "ul. Wiejska 5",
+  "zip": "05-250",
+  "city": "Radzymin",
+  "state_code": "MZ",
+  "tax_office_code": "1442",
+  "email": "biuro@bioleaf-pharma.pl",
+  "phone": "",
+  "website": "",
+  "iban": "",
+  "iban_vat": "",
+  "ksef_mode": "test"
+}

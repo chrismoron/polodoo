@@ -5,16 +5,24 @@
 # Mounted at /entrypoint-wrapper.sh in the container.
 set -euo pipefail
 
-CONF=/etc/odoo/odoo.conf
+CONF_SRC=/etc/odoo/odoo.conf
+CONF=/var/lib/odoo/.odoo.conf
 
-if [ -n "${ODOO_MASTER_PASSWORD:-}" ] && [ -w "$CONF" ]; then
-    # Replace the REPLACE_AT_BOOT sentinel with the real password.
-    # Use a non-shell-interpolated delimiter to handle passwords with /
+# Copy the bind-mounted conf to a user-writable location, then patch the
+# master password sentinel. We can't sed -i in /etc/odoo because the dir
+# is root-owned and the file is a read-only bind mount on most setups.
+cp "$CONF_SRC" "$CONF"
+chmod 600 "$CONF"
+
+if [ -n "${ODOO_MASTER_PASSWORD:-}" ]; then
     sed -i "s|^admin_passwd = REPLACE_AT_BOOT$|admin_passwd = ${ODOO_MASTER_PASSWORD}|" "$CONF"
-    echo "[entrypoint] Injected ODOO_MASTER_PASSWORD into odoo.conf"
+    echo "[entrypoint] Injected ODOO_MASTER_PASSWORD into $CONF"
 elif grep -q "^admin_passwd = REPLACE_AT_BOOT$" "$CONF" 2>/dev/null; then
     echo "[entrypoint] WARNING: ODOO_MASTER_PASSWORD not set; database manager will be locked" >&2
 fi
+
+# Tell Odoo (and its entrypoint) to use the writable copy
+export ODOO_RC="$CONF"
 
 # Delegate to the upstream Odoo entrypoint
 exec /entrypoint.sh "$@"

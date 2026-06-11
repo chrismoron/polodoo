@@ -1,0 +1,16 @@
+# Local development override — NOT used in Coolify production deploys.
+# - Maps host 8069 → container 8069 so http://localhost:8069 reaches Odoo
+#   directly, bypassing Traefik (which lives in Coolify, not in this stack).
+# - Relaxes dbfilter via CLI so http://localhost:8069 sees mnl_db / bioleaf_db
+#   even though "localhost" doesn't match ^%d_db$.
+# - Disables the db-backup sidecar locally to avoid cluttering ./backups.
+
+services:
+  odoo:
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+    command: ["odoo", "--db-filter=^.*$$"]
+
+  db-backup:
+    profiles: ["never-local"]

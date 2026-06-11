@@ -1,0 +1,19 @@
+# Translation of Odoo Server.
+# Polish translation for l10n_pl_nbp_rates.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-06-10\n"
+"Language-Team: Polish (https://www.transifex.com/odoo/teams/41243/pl/)\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+
+#. module: l10n_pl_nbp_rates
+#: model:ir.cron,name:l10n_pl_nbp_rates.cron_nbp_rate_update
+msgid "Poland: Update NBP Exchange Rates (Table A)"
+msgstr "Polska: Aktualizacja kursów walut NBP (Tabela A)"

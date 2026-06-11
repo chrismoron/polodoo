@@ -6,5 +6,5 @@ FROM odoo:19.0
 #   requests   — explicit declaration (used by l10n_pl_nbp_rates; likely already present
 #                as Odoo transitive dep, but declaring ensures availability)
 USER root
-RUN pip3 install --no-cache-dir xlsxwriter xlrd
+RUN pip3 install --no-cache-dir --break-system-packages xlsxwriter xlrd
 USER odoo
