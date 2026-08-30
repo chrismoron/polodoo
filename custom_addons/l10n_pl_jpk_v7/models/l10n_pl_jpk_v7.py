@@ -35,6 +35,7 @@ import base64
 import logging
 import re
 from datetime import datetime, timezone
+from decimal import Decimal, ROUND_HALF_UP
 
 from lxml import etree
 
@@ -299,6 +300,27 @@ class L10nPlJpkV7(models.Model):
     def _fmt(amount):
         """Format kwota as Polish JPK requires (positive, 2 decimals)."""
         return f'{abs(round(float(amount), 2)):.2f}'
+
+    @staticmethod
+    def _fmt_int(amount):
+        """Format kwota for Deklaracja P_NN fields (whole PLN, no decimals).
+
+        Declaration positions are etd:TKwotaC / etd:TKwotaCNieujemna, both
+        deriving from xsd:integer — the schema rejects decimals, so _fmt()
+        (used for Ewidencja) cannot be reused here.
+
+        Rounding follows art. 63 § 1 Ordynacji podatkowej: końcówki poniżej
+        50 gr pomija się, 50 gr i więcej podwyższa się do pełnych złotych.
+        That is ROUND_HALF_UP away from zero, not Python's default banker's
+        rounding, which would emit 2 for 2.50 instead of 3.
+
+        The sign is preserved on purpose: TKwotaC is signed (P_38 may go
+        negative when corrections exceed output VAT). Positions carrying a
+        sign constraint of their own — P_46 (maxInclusive=0) and the
+        TKwotaCNieujemna ones — are handled at their call sites.
+        """
+        rounded = Decimal(str(amount or 0)).quantize(Decimal('1'), rounding=ROUND_HALF_UP)
+        return str(int(rounded))
 
     # ── Naglowek ──────────────────────────────────────────────────────────────
     def _build_naglowek(self, root, kod_urzedu):
